@@ -1,5 +1,7 @@
 # XAF Skills for Claude Code
 
+![XAF Skills Overview](xafskills-overview.png)
+
 Hard-learned lessons from 15+ DevExpress XAF projects, distilled into reusable [Claude Code skills](https://docs.anthropic.com/en/docs/claude-code).
 
 These skills prevent AI coding agents from hitting the silent gotchas that make XAF + EF Core development painful.
