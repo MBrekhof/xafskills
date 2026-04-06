@@ -151,6 +151,30 @@ b.HasIndex(nameof(ClassName)).IsUnique().HasFilter("\"GCRecord\" = 0");
 
 XAF stores enums as strings in the database (e.g., `TimeEntryStatus.Draft` becomes `"Draft"`). When bridging to external systems (e.g., SQLite in a mobile app), cast to `(int)` for storage and back to enum string for OData POST.
 
+## EF Core Interceptors with XAF
+
+XAF manages DbContext creation — standard DI-based interceptor registration (`AddDbContext<T>(o => o.AddInterceptors(...))`) doesn't work. Use a static interceptor list on the DbContext:
+
+```csharp
+// In DbContext class:
+public static readonly List<IInterceptor> ExternalInterceptors = new();
+
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    base.OnConfiguring(optionsBuilder);
+    if (ExternalInterceptors.Count > 0)
+        optionsBuilder.AddInterceptors(ExternalInterceptors);
+}
+```
+
+Register in `Startup.cs` **before** `services.AddXaf(...)`:
+
+```csharp
+MyDbContext.ExternalInterceptors.Add(new MyMetricsInterceptor());
+```
+
+Common use cases: query duration metrics (`DbCommandInterceptor`), audit logging, soft-delete filtering.
+
 ## DbContext Checklist
 
 Every new entity needs:

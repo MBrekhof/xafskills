@@ -89,7 +89,7 @@ Without this, OData query binding fails silently due to case mismatch.
 
 ```csharp
 app.UseExceptionHandler(...);
-app.UseHttpsRedirection();
+app.UseHttpsRedirection();   // See gotcha below for monitoring endpoints
 app.UseRequestLocalization();
 app.UseStaticFiles();
 app.UseAuthentication();     // MUST be before Authorization
@@ -101,6 +101,17 @@ app.MapBlazorHub();
 ```
 
 `UseXaf()` after auth is mandatory — XAF needs the security context.
+
+### HTTPS redirect blocks Prometheus/health check scraping
+
+`UseHttpsRedirection()` returns 307 for ALL HTTP requests, including `/metrics` and `/health`. Docker containers (Prometheus, load balancers) scrape these over HTTP and can't follow the redirect to HTTPS with a dev cert. Exclude monitoring endpoints:
+
+```csharp
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/metrics")
+            && !context.Request.Path.StartsWithSegments("/health"),
+    appBuilder => appBuilder.UseHttpsRedirection());
+```
 
 ## Module Lifecycle
 
