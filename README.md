@@ -31,27 +31,29 @@ These skills prevent AI coding agents from hitting the silent gotchas that make 
 
 ## Installation
 
-Copy the skill folders to your Claude Code skills directory:
+These skills ship as a Claude Code **plugin** (`xaf-tools`) via this repo's built-in marketplace. Install once per machine:
 
-```bash
-# Global (all projects) — pick the skills you want
-cp -r xaf-efcore-entities ~/.claude/skills/
-cp -r xaf-blazor-startup ~/.claude/skills/
-cp -r xaf-security ~/.claude/skills/
-cp -r xaf-reporting ~/.claude/skills/
-cp -r devexpress-xaf-docker ~/.claude/skills/
-cp -r xaf-hangfire-jobs ~/.claude/skills/
-cp -r xaf-search-panels ~/.claude/skills/
-cp -r xaf-conditional-appearance ~/.claude/skills/
-cp -r xaf-navigation-hub ~/.claude/skills/
-cp -r xaf-environment-auth ~/.claude/skills/
-cp -r xaf-playwright-testing ~/.claude/skills/
-
-# Or per-project
-cp -r xaf-efcore-entities /path/to/your/project/.claude/skills/
+```text
+/plugin marketplace add MBrekhof/xafskills
+/plugin install xaf-tools@xafskills
 ```
 
-Skills trigger automatically when Claude Code works on matching tasks.
+That's it. All 11 skills install together and trigger automatically when Claude Code works on matching tasks. To keep machines in sync, enable auto-update for the marketplace (`autoUpdate: true` in your `~/.claude/settings.json` under `extraKnownMarketplaces`) — the plugin tracks the latest commit, so a `git push` here propagates to every machine on its next session.
+
+Update manually at any time with:
+
+```text
+/plugin marketplace update xafskills
+```
+
+### Manual install (no plugin)
+
+Prefer to copy individual skills? They live under `skills/`:
+
+```bash
+cp -r skills/xaf-efcore-entities ~/.claude/skills/      # global (all projects)
+cp -r skills/xaf-efcore-entities /path/to/project/.claude/skills/   # per-project
+```
 
 ## Requirements
 
