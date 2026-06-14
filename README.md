@@ -28,6 +28,7 @@ These skills prevent AI coding agents from hitting the silent gotchas that make 
 | **xaf-navigation-hub** | Card-based DashboardView launchpad as startup view: IModelNavigationHub, permission-filtered tiles via ShowNavigationItemController, per-user pinned favorites |
 | **xaf-environment-auth** | SSO vs password authentication switched by ASPNETCORE_ENVIRONMENT (not #if DEBUG), with the HangfireJob service-account carve-out |
 | **xaf-playwright-testing** | E2E testing XAF Blazor with Playwright + NUnit: AuthenticatedTestBase, multi-fallback selectors, screenshot-on-failure, NetworkIdle timing |
+| **xaf-easytest-authoring** | EasyTest functional tests driving real WinForms + Blazor UI from one test body: derive captions/guards from entities & ViewControllers, semantic API cheat-sheet, EasyTest project wiring, and the locale/nested-grid/Blazor-driver gotchas |
 
 ## Installation
 
@@ -38,7 +39,7 @@ These skills ship as a Claude Code **plugin** (`xaf-tools`) via this repo's buil
 /plugin install xaf-tools@xafskills
 ```
 
-That's it. All 11 skills install together and trigger automatically when Claude Code works on matching tasks. To keep machines in sync, enable auto-update for the marketplace (`autoUpdate: true` in your `~/.claude/settings.json` under `extraKnownMarketplaces`) — the plugin tracks the latest commit, so a `git push` here propagates to every machine on its next session.
+That's it. All 12 skills install together and trigger automatically when Claude Code works on matching tasks. To keep machines in sync, enable auto-update for the marketplace (`autoUpdate: true` in your `~/.claude/settings.json` under `extraKnownMarketplaces`) — the plugin tracks the latest commit, so a `git push` here propagates to every machine on its next session.
 
 Update manually at any time with:
 
