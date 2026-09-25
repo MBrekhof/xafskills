@@ -8,7 +8,7 @@
     {
       "name": "xaf-tools",
       "source": "./",
-      "description": "Hard-learned DevExpress XAF + EF Core lessons as Claude Code skills.",
+      "description": "Hard-learned DevExpress XAF + EF Core lessons, including saved list filters.",
       "category": "productivity",
       "keywords": ["xaf", "devexpress", "dotnet", "blazor"]
     }
