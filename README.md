@@ -34,7 +34,6 @@ These skills prevent AI coding agents from hitting the silent gotchas that make 
 ## Design notes
 
 - [Saved List Filters skill](skills/xaf-saved-list-filters/SKILL.md) — implementation guidance for saved filters in XAF applications with EF Core.
-- [Pattern comparison](docs/saved-list-filters-comparison.md) and [design](docs/saved-list-filters-design.md) — examples from Fleetman, DataDrive, HIS, and PathQ.
 
 ## Installation
 

@@ -78,7 +78,7 @@ Use a `ViewController<ListView>` for actions shared by supported list views. Res
 
 Keep persistence, visibility, validation, and default-selection rules in a small service when more than one controller or entry point needs them. For a narrow single-view feature, follow the project's simpler established pattern without creating an unnecessary service layer.
 
-For the list UX, follow the simple HIS pattern unless the product asks for more: put the available saved filters directly in one `SingleChoiceAction`, with an “All” choice to return to the unfiltered list. Do not add a separate “Manage…” choice by default. Keep save and clear as separate, clearly named actions. Let the save dialog collect the filter name and any supported visibility/default options. Add rename or delete controls only when required, and provide an explicit place to use them.
+For the list UX, put the available saved filters directly in one `SingleChoiceAction`, with an “All” choice to return to the unfiltered list. Do not add a separate “Manage…” choice by default. Keep save and clear as separate, clearly named actions. Let the save dialog collect the filter name and any supported visibility/default options. Add rename or delete controls only when required, and provide an explicit place to use them.
 
 The controller should:
 
