@@ -13,7 +13,7 @@ description: >
 
 Use this skill to add saved filters to an XAF application with EF Core. A saved filter is a persistent record that stores a Criteria string for later use on a ListView. The controller presents the records as actions and applies the selected criterion through the view's `CollectionSource`.
 
-The reference design is [saved-list-filters-design.md](../../docs/saved-list-filters-design.md). The comparison with Fleetman, HIS, PathQ, and DataDrive is in [saved-list-filters-comparison.md](../../docs/saved-list-filters-comparison.md). Read the parts relevant to the current task; first inspect the target application because user, tenant, ORM, security, and editor choices differ.
+Inspect the target application because user, tenant, ORM, security, and editor choices differ.
 
 ## Before changing code
 
@@ -30,7 +30,16 @@ Check current DevExpress documentation for APIs whose signatures or platform beh
 
 ## Data model
 
-Follow the application's EF Core base-entity and naming conventions. A filter entity typically needs:
+Use the shared XAF entity and table name `FilteringCriteria`. Its persisted common fields are
+`Name`, `Criterion`, `ObjectTypeFullName`, `ViewId`, `Owner`, `AllowPublic`, and `Default`.
+Persist the object type by its full name and expose `ObjectType` as a non-persistent property for
+the criteria editor. Map the entity explicitly to the `FilteringCriteria` table. Do not introduce
+parallel names such as `SavedFilter`, `SavedFilters`, `FilteringCriterion`, `TargetViewId`,
+`DefinitionJson`, or `IsShared` for this feature. When converting an existing implementation,
+migrate its saved criteria and visibility into these fields. Keep application-specific fields only
+when they support an existing product feature.
+
+Follow the application's EF Core base-entity conventions. The common fields are:
 
 - `Name` and `Criterion`.
 - Persisted `ObjectTypeFullName` and a non-persistent `ObjectType` for the criteria editor.
@@ -69,13 +78,15 @@ Use a `ViewController<ListView>` for actions shared by supported list views. Res
 
 Keep persistence, visibility, validation, and default-selection rules in a small service when more than one controller or entry point needs them. For a narrow single-view feature, follow the project's simpler established pattern without creating an unnecessary service layer.
 
+For the list UX, follow the simple HIS pattern unless the product asks for more: put the available saved filters directly in one `SingleChoiceAction`, with an “All” choice to return to the unfiltered list. Do not add a separate “Manage…” choice by default. Keep save and clear as separate, clearly named actions. Let the save dialog collect the filter name and any supported visibility/default options. Add rename or delete controls only when required, and provide an explicit place to use them.
+
 The controller should:
 
 1. Query available filters when the view is ready.
-2. Add filter choices and an “All” choice to a `SingleChoiceAction`.
+2. Add the accessible filters directly as choices and include an “All” choice in the `SingleChoiceAction`; avoid an extra management choice unless requested.
 3. Select the applicable default only after loading accessible choices.
 4. Apply a selected criterion and synchronize the editor's visible filter where supported.
-5. Open a modal `DetailView` to create or edit a filter.
+5. Open a modal `DetailView` to create a filter, and to edit one only when the product provides that workflow.
 6. Refresh choices only after a successful commit.
 7. Clear only criteria whose ownership is known.
 
@@ -122,6 +133,7 @@ If the product wants a global “clear user filters” action, make its list of 
 Do not add these without a product requirement:
 
 - Persisted DxGrid layout, sorting, grouping, or paging state.
+- A separate filter-management screen or a “Manage…” menu choice when the simple filter menu meets the product need.
 - Role-based sharing.
 - Static or distributed cache.
 - Automatic rewriting of saved criteria after a model refactor.
@@ -131,7 +143,8 @@ These are separate features with their own storage, access, and compatibility co
 
 ## Completion checklist
 
-- A user can save, select, rename, and clear a filter on each required platform.
+- A user can save, select, and clear a filter on each required platform.
+- Filter choices appear directly in the list's filter menu, with an “All” choice; no separate management entry is added unless required.
 - Private and public visibility behave correctly for different users.
 - The `Default` role can create and read its permitted filters, can write owned filters, and cannot delete filters when this baseline applies.
 - Tenant boundaries are enforced by the data access path.
