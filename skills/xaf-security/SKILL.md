@@ -113,6 +113,30 @@ while (role.TypePermissions.Count > 0) {
 }
 ```
 
+## Non-Persistent Objects and AllowEdit
+
+The security system sets `Info.AllowEdit = false` on ListViews for `[DomainComponent]` types because no type permissions exist for them. Setting `listView.AllowEdit.SetItemValue("key", true)` alone is NOT enough — the BoolList ANDs all items, and `Info.AllowEdit = false` overrides everything.
+
+```csharp
+// Must override BOTH the model default AND the security system
+listView.Model.AllowEdit = true;                              // Model default is false
+listView.AllowEdit.SetItemValue("Info.AllowEdit", true);      // Security system blocks this
+listView.AllowEdit.SetItemValue("MyController", true);        // Your own flag
+```
+
+### BoolList Debugging
+
+When `AllowEdit.ResultValue` is unexpectedly `false`, enumerate all items to find the blocker:
+
+```csharp
+var items = string.Join(", ", listView.AllowEdit.GetKeys()
+    .Select(k => $"{k}={listView.AllowEdit[k]}"));
+logger.LogInformation("AllowEdit items: [{Items}]", items);
+// Output: AllowEdit items: [DataAccessModeSupportsEdit=True, Info.AllowEdit=False, MyKey=True]
+```
+
+Works the same for `AllowNew`, `AllowDelete`, and any XAF `BoolList`.
+
 ## Delete Permission Gotcha
 
 If users need to unpin/remove items, the role must include Delete:

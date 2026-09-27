@@ -76,6 +76,13 @@ if (Customer is not null)
     criteria.Add(CriteriaOperator.Parse("Customer.ID = ?", Customer.ID));
 ```
 
+Verified end-to-end on Blazor (2026-08-22, XafReportParametersObjects): a `Customer?` property on
+a `[DomainComponent]` parameters object renders as a normal XAF lookup in the parameters dialog.
+The XtraReport side can carry the same intent — `new Parameter { Type = typeof(Customer), Visible = false }`
+is a legal custom-typed parameter (dxdocs XtraReports/9999) and survives REPX serialization
+(Copy Predefined Report → `IReportStorage.LoadReport`), so tooling can detect lookups by walking
+`Parameter.Type.BaseType` to `DevExpress.Persistent.BaseImpl.EF.BaseObject`.
+
 ### Range filters
 
 ```csharp
@@ -164,3 +171,33 @@ var hash = SHA256(string.Join("|", parts));
 ```
 
 Compare stored hash with current to set an `IsStale` flag for regeneration.
+
+## Predefined Reports Own Their ParametersObjectType
+
+`PredefinedReportsUpdater` reconciles its registrations on every database update
+(via its `ReportDataComparer`). If code changes a predefined report's
+`ParametersObjectType` to something other than what `AddPredefinedReport` declared,
+the row is treated as orphaned: it disappears from the Reports list and a new
+canonical row is created — you get duplicate report rows on every reconciliation.
+
+Rules:
+- Predefined reports: declare the parameters type in `AddPredefinedReport<T>(name, dataType, parametersType)`. Never reassign it at runtime.
+- Dynamically assigning `ParametersObjectType` (e.g. to a generated class) is only safe for **user-created reports** (`PredefinedReportTypeName` is null/empty). Guard any updater logic with that check.
+- To experiment with a predefined report, use the built-in **Copy Predefined Report** action to get a user-owned copy first.
+
+## DomainComponent Classes Are Auto-Collected in Module Assemblies
+
+Non-persistent `[DomainComponent]` classes declared inside an XAF module assembly are
+collected automatically by `ModuleBase.GetDeclaredExportedTypes()` — no
+`AdditionalExportedTypes.Add(...)` needed (verified on 25.2: a generated
+`ReportParametersObjectBase` subclass worked with no explicit registration).
+`AdditionalExportedTypes` is for types in *other* (non-module) assemblies.
+
+## Template Gotcha: DB Schema Update Requires an Attached Debugger
+
+The XAF solution template only auto-updates the database on version/schema mismatch when
+`System.Diagnostics.Debugger.IsAttached` (i.e., F5 from Visual Studio). Running
+`dotnet run` headless after a model change throws the DatabaseVersionMismatch error.
+For dev workflows that run from the CLI, change the template handlers to update in
+`#if DEBUG` regardless of debugger (BlazorApplication.cs / WinApplication.cs +
+Win Startup.cs `DatabaseUpdateMode` block).
