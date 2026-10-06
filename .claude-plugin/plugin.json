@@ -1,7 +1,7 @@
 {
   "name": "xaf-tools",
   "displayName": "XAF Tools",
-  "description": "Hard-learned DevExpress XAF + EF Core lessons as Claude Code skills: entity authoring, Blazor startup, security, reporting, Docker, Hangfire jobs, search panels, conditional appearance, navigation hub, environment auth, and Playwright testing.",
+  "description": "Hard-learned DevExpress XAF + EF Core lessons as Claude Code skills: entity authoring, saved list filters, Blazor startup, security, reporting, Docker, Hangfire jobs, search panels, conditional appearance, navigation hub, environment auth, and Playwright testing.",
   "author": {
     "name": "Martin Brekhof",
     "url": "https://github.com/MBrekhof"
